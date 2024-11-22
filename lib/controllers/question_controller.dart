@@ -8,8 +8,8 @@ class QuestionController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    //loadQuestionCategoryFromSharedPreferences();
     loadAllQuestionsFromStorage();
+    loadCategoriesFromStorage();
   }
 
   final RxList<QuestionModel> _questions = <QuestionModel>[].obs;
@@ -23,6 +23,45 @@ class QuestionController extends GetxController {
 
   final RxList<String> savedCategories = <String>[].obs;
   final RxList<String> savedSubtitles = <String>[].obs;
+
+  // Charger les catégories depuis SharedPreferences
+  Future<void> loadCategoriesFromStorage() async {
+    final prefs = await SharedPreferences.getInstance();
+    savedCategories.value = prefs.getStringList('categories') ?? [];
+    savedSubtitles.value = prefs.getStringList('subtitles') ?? [];
+    update();
+  }
+
+  // Sauvegarder les catégories et les sous-titres dans SharedPreferences
+  Future<void> _saveCategories() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('categories', savedCategories);
+    await prefs.setStringList('subtitles', savedSubtitles);
+  }
+
+  // Ajouter une catégorie
+  void addCategory(String title, String subtitle) {
+    savedCategories.add(title);
+    savedSubtitles.add(subtitle);
+    _saveCategories();
+    update();
+  }
+
+  // Modifier une catégorie
+  void updateCategory(int index, String title, String subtitle) {
+    savedCategories[index] = title;
+    savedSubtitles[index] = subtitle;
+    _saveCategories();
+    update();
+  }
+
+  // Supprimer une catégorie
+  void removeCategory(int index) {
+    savedCategories.removeAt(index);
+    savedSubtitles.removeAt(index);
+    _saveCategories();
+    update();
+  }
 
   // Méthodes pour charger et sauvegarder les questions depuis le stockage
   void loadAllQuestionsFromStorage() async {

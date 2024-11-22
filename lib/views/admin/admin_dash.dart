@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:myquizapp/controllers/question_controller.dart';
@@ -79,14 +79,18 @@ class AdminDashboard extends StatelessWidget {
                             IconButton(
                               icon: const Icon(Icons.delete,
                                   color: Color(0xFFf94144)),
-                              onPressed: () {
-                                controller.savedCategories.removeAt(index);
-                                controller.savedSubtitles.removeAt(index);
-                                controller.update();
-                                Fluttertoast.showToast(
+                              onPressed: () async {
+                                bool? confirm = await _showDeleteConfirmationDialog(context);
+                                if (confirm == true) {
+                                  controller.savedCategories.removeAt(index);
+                                  controller.savedSubtitles.removeAt(index);
+                                  controller.update();
+                                  Fluttertoast.showToast(
                                     msg: "Catégorie supprimée",
                                     toastLength: Toast.LENGTH_SHORT,
-                                    gravity: ToastGravity.BOTTOM);
+                                    gravity: ToastGravity.BOTTOM,
+                                  );
+                                }
                               },
                             ),
                           ],
@@ -194,7 +198,7 @@ class AdminDashboard extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          backgroundColor: const Color(0xFF2ec4b6),
+          backgroundColor: const Color(0xFF264653),
           title: const Text(
             "Modifier la catégorie",
             style: TextStyle(color: Colors.white),
@@ -251,6 +255,42 @@ class AdminDashboard extends StatelessWidget {
                 }
               },
               child: const Text("Mettre à jour"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<bool?> _showDeleteConfirmationDialog(BuildContext context) async {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF264653),
+          title: const Text(
+            "Confirmer la suppression",
+            style: TextStyle(color: Colors.white),
+          ),
+          content: const Text(
+            "Êtes-vous sûr de vouloir supprimer cette catégorie ?",
+            style: TextStyle(color: Colors.white),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: const Text("Annuler",
+                  style: TextStyle(color: Color(0xFF264653))),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFf94144)),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              child: const Text("Supprimer"),
             ),
           ],
         );

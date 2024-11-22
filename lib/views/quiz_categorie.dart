@@ -14,7 +14,7 @@ class QuizCategoryScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          // Fond SVG avec gestion des erreurs
+          // Fond SVG
           Positioned.fill(
             child: SvgPicture.asset(
               "assets/bg.svg",
@@ -27,7 +27,7 @@ class QuizCategoryScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: GetBuilder<QuestionController>(
               builder: (controller) {
-                // Affichage si aucune catégorie n'est disponible
+                // Vérifier si les catégories sont disponibles
                 if (controller.savedCategories.isEmpty) {
                   return const Center(
                     child: Text(
@@ -37,7 +37,7 @@ class QuizCategoryScreen extends StatelessWidget {
                   );
                 }
 
-                // GridView pour afficher les catégories sous forme de cartes
+                // Affichage des catégories
                 return GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
@@ -46,12 +46,11 @@ class QuizCategoryScreen extends StatelessWidget {
                   ),
                   itemCount: controller.savedCategories.length,
                   itemBuilder: (context, index) {
-                    // Génération de couleurs attrayantes
+                    // Couleurs dynamiques pour les catégories
                     final List<Color> gradientColors = [
                       Colors.blueAccent,
-                      Colors.lightBlueAccent.shade100
+                      Colors.lightBlueAccent.shade100,
                     ];
-
                     if (index % 2 == 1) {
                       gradientColors[0] = Colors.pinkAccent;
                       gradientColors[1] = Colors.pink.shade100;
@@ -60,8 +59,11 @@ class QuizCategoryScreen extends StatelessWidget {
                     return GestureDetector(
                       onTap: () {
                         // Action lors de la sélection d'une catégorie
-                        debugPrint(
-                            "Tapped on Quiz: ${controller.savedCategories[index]}");
+                        Get.snackbar(
+                          "Catégorie sélectionnée",
+                          "Vous avez choisi : ${controller.savedCategories[index]}",
+                          snackPosition: SnackPosition.BOTTOM,
+                        );
                       },
                       child: Card(
                         elevation: 4,
@@ -76,13 +78,6 @@ class QuizCategoryScreen extends StatelessWidget {
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
-                                blurRadius: 6,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
                           ),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -100,18 +95,6 @@ class QuizCategoryScreen extends StatelessWidget {
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,
                                 ),
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                controller.savedSubtitles.length > index
-                                    ? controller.savedSubtitles[index]
-                                    : "Sous-titre indisponible",
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.white70,
-                                ),
-                                textAlign: TextAlign.center,
                               ),
                             ],
                           ),
