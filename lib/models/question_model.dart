@@ -1,8 +1,10 @@
+import 'category_model.dart';
+
 class QuestionModel {
   final String question;
   final List<String> options;
   final int correctAnswer;
-  final String category;
+  final Category category;  // Utilisation de l'objet Category au lieu d'une chaîne de caractères
 
   QuestionModel({
     required this.question,
@@ -16,7 +18,7 @@ class QuestionModel {
       'text': question,
       'options': options,
       'correctAnswer': correctAnswer,
-      'category': category,
+      'category': category.toJson(),  // Convertir l'objet Category en JSON
     };
   }
 
@@ -25,7 +27,7 @@ class QuestionModel {
       question: json['text'],
       options: List<String>.from(json['options']),
       correctAnswer: json['correctAnswer'],
-      category: json['category'],
+      category: Category.fromJson(json['category']),  // Créer un objet Category à partir du JSON
     );
   }
 }

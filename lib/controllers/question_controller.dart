@@ -2,14 +2,17 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../models/category_model.dart';
 import '../models/question_model.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class QuestionController extends GetxController {
   @override
   void onInit() {
     super.onInit();
     loadAllQuestionsFromStorage();
-    loadCategoriesFromStorage();
+
   }
 
   final RxList<QuestionModel> _questions = <QuestionModel>[].obs;
@@ -24,13 +27,13 @@ class QuestionController extends GetxController {
   final RxList<String> savedCategories = <String>[].obs;
   final RxList<String> savedSubtitles = <String>[].obs;
 
-  // Charger les catégories depuis SharedPreferences
+  /*// Charger les catégories depuis SharedPreferences
   Future<void> loadCategoriesFromStorage() async {
     final prefs = await SharedPreferences.getInstance();
     savedCategories.value = prefs.getStringList('categories') ?? [];
     savedSubtitles.value = prefs.getStringList('subtitles') ?? [];
     update();
-  }
+  }*/
 
   // Sauvegarder les catégories et les sous-titres dans SharedPreferences
   Future<void> _saveCategories() async {
@@ -39,13 +42,24 @@ class QuestionController extends GetxController {
     await prefs.setStringList('subtitles', savedSubtitles);
   }
 
-  // Ajouter une catégorie
+  /*// Ajouter une catégorie
   void addCategory(String title, String subtitle) {
+    // Ajouter la catégorie dans l'API
+    addCategoryToBackend(title, subtitle);
+
+    // Ensuite, ajouter la catégorie localement dans SharedPreferences
     savedCategories.add(title);
     savedSubtitles.add(subtitle);
     _saveCategories();
     update();
-  }
+  }*/
+
+
+
+
+
+
+
 
   // Modifier une catégorie
   void updateCategory(int index, String title, String subtitle) {
@@ -55,13 +69,18 @@ class QuestionController extends GetxController {
     update();
   }
 
-  // Supprimer une catégorie
+ /* // Supprimer une catégorie
   void removeCategory(int index) {
     savedCategories.removeAt(index);
     savedSubtitles.removeAt(index);
     _saveCategories();
     update();
-  }
+  }*/
+
+
+
+
+
 
   // Méthodes pour charger et sauvegarder les questions depuis le stockage
   void loadAllQuestionsFromStorage() async {
@@ -114,7 +133,7 @@ class QuestionController extends GetxController {
 
   // Mettre à jour une question existante
   Future<void> updateQuestion(
-      String category,
+      Category category,
       int index,
       String newText,
       List<String> newOptions,
@@ -124,7 +143,7 @@ class QuestionController extends GetxController {
       final prefs = await SharedPreferences.getInstance();
 
       // Charger les questions existantes
-      List<String> questionList = prefs.getStringList(category) ?? [];
+      List<String> questionList = prefs.getStringList(category.name) ?? [];
       if (index < questionList.length) {
         final updatedQuestion = QuestionModel(
           question: newText,
@@ -133,7 +152,7 @@ class QuestionController extends GetxController {
           category: category,
         );
         questionList[index] = jsonEncode(updatedQuestion.toJson());
-        await prefs.setStringList(category, questionList);
+        await prefs.setStringList(category.name, questionList);
       }
 
       // Mettre à jour la liste locale
@@ -150,9 +169,8 @@ class QuestionController extends GetxController {
     }
   }
 
-  // Ajouter une nouvelle question
   Future<void> addQuestion(
-      String category,
+      Category category,
       String questionText,
       List<String> options,
       int correctAnswer,
@@ -160,25 +178,30 @@ class QuestionController extends GetxController {
     try {
       final prefs = await SharedPreferences.getInstance();
 
-      // Créer une nouvelle question
+      // Créer une nouvelle question avec la catégorie correcte
       final newQuestion = QuestionModel(
         question: questionText,
         options: options,
         correctAnswer: correctAnswer,
-        category: category,
+        category: category, // Utiliser directement la catégorie passée en paramètre
       );
 
       // Ajouter au stockage local
       _questions.add(newQuestion);
 
-      // Ajouter au stockage partagé
-      List<String> questionList = prefs.getStringList(category) ?? [];
+      // Récupérer la liste de questions de la catégorie depuis SharedPreferences
+      List<String> questionList = prefs.getStringList(category.id.toString()) ?? [];
       questionList.add(jsonEncode(newQuestion.toJson()));
-      await prefs.setStringList(category, questionList);
+
+      // Sauvegarder la liste mise à jour dans SharedPreferences
+      await prefs.setStringList(category.id.toString(), questionList);
 
       update();
     } catch (e) {
       Get.snackbar("Erreur", "Échec de l'ajout de la question : $e");
     }
   }
+
+
+
 }

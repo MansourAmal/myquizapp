@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:myquizapp/models/category_model.dart';
 import '../../controllers/question_controller.dart';
 
 class AdminScreen extends StatelessWidget {
@@ -204,7 +205,7 @@ class AdminScreen extends StatelessWidget {
 
     // Ajouter la question via le controller
     questionController.addQuestion(
-      quizCategory,
+      quizCategory as Category,
       question,
       options,
       correctAnswerIndex,
