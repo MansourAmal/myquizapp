@@ -3,7 +3,6 @@ import 'package:flutter_svg/svg.dart';
 
 import 'package:get/get.dart';
 import 'package:myquizapp/views/admin/admin_dash.dart';
-import 'package:myquizapp/views/quiz_categorie.dart';
 import 'package:myquizapp/views/user/userScreen.dart';
 
 import '../utils/constants.dart';

@@ -1,13 +1,15 @@
 import 'category_model.dart';
 
 class QuestionModel {
-  final String question;
+  final int id;
+  final String text;
   final List<String> options;
   final int correctAnswer;
-  final Category category;  // Utilisation de l'objet Category au lieu d'une chaîne de caractères
+  final Category category; // Modèle imbriqué
 
   QuestionModel({
-    required this.question,
+    required this.id,
+    required this.text,
     required this.options,
     required this.correctAnswer,
     required this.category,
@@ -15,19 +17,21 @@ class QuestionModel {
 
   Map<String, dynamic> toJson() {
     return {
-      'text': question,
+      'id': id,
+      'text': text,
       'options': options,
       'correctAnswer': correctAnswer,
-      'category': category.toJson(),  // Convertir l'objet Category en JSON
+      'category': category.toJson(), // Convertir l'objet imbriqué
     };
   }
 
   factory QuestionModel.fromJson(Map<String, dynamic> json) {
     return QuestionModel(
-      question: json['text'],
-      options: List<String>.from(json['options']),
-      correctAnswer: json['correctAnswer'],
-      category: Category.fromJson(json['category']),  // Créer un objet Category à partir du JSON
+      id: json['id'] as int, // Vérifiez que `id` est un entier
+      text: json['text'] as String,
+      options: List<String>.from(json['options']), // Liste d'options
+      correctAnswer: json['correctAnswer'] as int, // Indice entier
+      category: Category.fromJson(json['category']), // Création de l'objet Category
     );
   }
 }

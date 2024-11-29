@@ -3,17 +3,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:myquizapp/controllers/CategoryController.dart';
 import 'package:myquizapp/views/user/quizScreen.dart';
-
-import '../../controllers/question_controller.dart';
+import '../../models/category_model.dart';
 
 class UserScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Charger les catégories depuis l'API au démarrage
-    final QuestionController questionController = Get.put(QuestionController());
     final CategoryController categoryController = Get.put(CategoryController());
-
-    categoryController.loadCategoriesFromBackend();
 
     return Scaffold(
       appBar: AppBar(
@@ -48,7 +44,7 @@ class UserScreen extends StatelessWidget {
                 Expanded(
                   child: Obx(() {
                     // Vérifiez si les catégories sont chargées
-                    if (questionController.savedCategories.isEmpty) {
+                    if (categoryController.savedCategories.isEmpty) {
                       return const Center(
                         child: CircularProgressIndicator(),
                       );
@@ -61,12 +57,13 @@ class UserScreen extends StatelessWidget {
                         mainAxisSpacing: 12, // Espacement vertical entre les cartes
                         childAspectRatio: 0.8, // Proportions ajustées pour réduire la taille
                       ),
-                      itemCount: questionController.savedCategories.length,
+                      itemCount: categoryController.savedCategories.length,
                       itemBuilder: (context, index) {
+                        Category category = categoryController.savedCategories[index];
                         return GestureDetector(
                           onTap: () {
                             // Naviguer vers l'écran de quiz avec la catégorie choisie
-                            Get.to(() => QuizScreen(quizCategory: questionController.savedCategories[index]));
+                            Get.to(() => QuizScreen(quizCategory: category.id));
                           },
                           child: Card(
                             elevation: 6,
@@ -89,7 +86,7 @@ class UserScreen extends StatelessWidget {
                                     ),
                                     const SizedBox(height: 5),
                                     Text(
-                                      questionController.savedCategories[index],
+                                      category.name, // Affiche le nom de la catégorie
                                       style: const TextStyle(
                                         fontSize: 14, // Taille réduite du texte
                                         fontWeight: FontWeight.bold,

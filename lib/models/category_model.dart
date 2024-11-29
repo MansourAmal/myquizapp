@@ -2,14 +2,21 @@ class Category {
   final int id;
   final String name;
   final String description;
+  final DateTime createdDate;
 
-  Category( {required this.id, required this.name,required this.description});
+  Category({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.createdDate,
+  });
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'name': name,
-      'description':description,
+      'description': description,
+      'createdDate': createdDate.toIso8601String(),
     };
   }
 
@@ -17,7 +24,8 @@ class Category {
     return Category(
       id: json['id'],
       name: json['name'],
-      description:json['description'],
+      description: json['description'],
+      createdDate: DateTime.parse(json['createdDate']),
     );
   }
 }

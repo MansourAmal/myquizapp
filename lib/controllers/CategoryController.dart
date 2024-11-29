@@ -38,10 +38,10 @@ class CategoryController extends GetxController {
         // Assurez-vous de rafraîchir l'interface avec `update()`
         update();
       } else {
-        Get.snackbar("Erreur", "Impossible de charger les catégories depuis le serveur.");
+        print("Erreur Impossible de charger les catégories depuis le serveur.");
       }
     } catch (e) {
-      Get.snackbar("Erreur", "Une erreur s'est produite : $e");
+      print("Erreur Une erreur s'est produite : $e");
     }
   }
 
@@ -134,6 +134,29 @@ class CategoryController extends GetxController {
 
     }
   }
+
+  Future<void> searchCategoriesByDate(DateTime date) async {
+    try {
+      final response = await http.get(
+        Uri.parse('http://localhost:8085/quiz/api/categories/search-by-date?createdDate=${date.toIso8601String()}'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> categories = jsonDecode(response.body);
+
+        savedCategories.value = categories.map((categoryJson) {
+          return Category.fromJson(categoryJson);
+        }).toList();
+        update(); // Met à jour l'UI
+      } else {
+        print("Erreur lors de la recherche par date : ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Erreur lors de la recherche par date : $e");
+    }
+  }
+
 
 
 }

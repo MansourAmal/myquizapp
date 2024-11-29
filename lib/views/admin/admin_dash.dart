@@ -51,11 +51,24 @@ class AdminDashboard extends StatelessWidget {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFF2a9d8f),
-        onPressed: () => _showAddCategoryDialog(context, categoryController),
-        child: const Icon(Icons.add, color: Colors.white),
+
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FloatingActionButton(
+            backgroundColor: const Color(0xFF2a9d8f),
+            onPressed: () => _showAddCategoryDialog(context, categoryController),
+            child: const Icon(Icons.add, color: Colors.white),
+          ),
+          const SizedBox(height: 10),
+          FloatingActionButton(
+            backgroundColor: const Color(0xFF2ec4b6),
+            onPressed: () => _showDateSearchDialog(context, categoryController),
+            child: const Icon(Icons.search, color: Colors.white),
+          ),
+        ],
       ),
+
     );
   }
 
@@ -67,8 +80,7 @@ class AdminDashboard extends StatelessWidget {
       ),
       color: const Color(0xFF2ec4b6),
       child: ListTile(
-        onTap: () => Get.to(() => AdminScreen(quizCategory: category.name)),
-        title: Text(
+        onTap: () => Get.to(() => QuestionPage(category: category)),        title: Text(
           category.name,
           style: const TextStyle(
             fontSize: 16,
@@ -351,4 +363,60 @@ class AdminDashboard extends StatelessWidget {
       },
     );
   }
+
+  void _showDateSearchDialog(BuildContext context, CategoryController controller) {
+    DateTime? selectedDate;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF003049),
+          title: const Text(
+            "Rechercher par date",
+            style: TextStyle(color: Colors.white),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ElevatedButton(
+                onPressed: () async {
+                  final pickedDate = await showDatePicker(
+                    context: context,
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime(2000),
+                    lastDate: DateTime.now(),
+                  );
+                  if (pickedDate != null) {
+                    selectedDate = pickedDate;
+                  }
+                },
+                child: const Text("Sélectionner une date"),
+              ),
+            ],
+          ),
+          actions: [
+            _buildCancelButton(context),
+            TextButton(
+              onPressed: () async {
+                if (selectedDate != null) {
+                  await controller.searchCategoriesByDate(selectedDate!);
+                  Navigator.of(context).pop();
+                } else {
+                  Fluttertoast.showToast(
+                    msg: "Veuillez sélectionner une date.",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                  );
+                }
+              },
+              child: const Text("Rechercher", style: TextStyle(color: Colors.green)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
 }
